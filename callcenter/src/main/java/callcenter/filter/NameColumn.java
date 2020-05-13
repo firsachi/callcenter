@@ -17,6 +17,10 @@ public class NameColumn {
 		super();
 	}
 
+	public NameColumn(int numberColumn2, DefaultNameColumn defaultNameColumn) {
+		super();
+	}
+
 	public DefaultNameColumn getNameColumn() {
 		return nameColumn;
 	}
