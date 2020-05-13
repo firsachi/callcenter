@@ -19,26 +19,11 @@ class MapColumnsTest {
 	@BeforeEach
     void init() {
 		expected = new HashMap<DefaultNameColumn, NameColumn>();
-		NameColumn nameColumn = new NameColumn();
-		nameColumn.setNameColumn(DefaultNameColumn.NUMBER);
-		nameColumn.setNumberColumn(1);
-		expected.put(nameColumn.getNameColumn(), nameColumn);
-		nameColumn = new NameColumn();
-		nameColumn.setNameColumn(DefaultNameColumn.DATEDUE);
-		nameColumn.setNumberColumn(2);
-		expected.put(nameColumn.getNameColumn(), nameColumn);
-		nameColumn = new NameColumn();
-		nameColumn.setNameColumn(DefaultNameColumn.DATECORRESPONDENT);
-		nameColumn.setNumberColumn(3);
-		expected.put(nameColumn.getNameColumn(), nameColumn);
-		nameColumn = new NameColumn();
-		nameColumn.setNameColumn(DefaultNameColumn.CORRESPONDENT);
-		nameColumn.setNumberColumn(4);
-		expected.put(nameColumn.getNameColumn(), nameColumn);
-		nameColumn = new NameColumn();
-		nameColumn.setNameColumn(DefaultNameColumn.SUMMARY);
-		nameColumn.setNumberColumn(5);
-		expected.put(nameColumn.getNameColumn(), nameColumn);
+		expected.put(DefaultNameColumn.NUMBER, new NameColumn(1, DefaultNameColumn.NUMBER));
+		expected.put(DefaultNameColumn.DATEDUE, new NameColumn(2, DefaultNameColumn.DATEDUE));
+		expected.put(DefaultNameColumn.DATECORRESPONDENT, new NameColumn(3, DefaultNameColumn.DATECORRESPONDENT));
+		expected.put(DefaultNameColumn.CORRESPONDENT, new NameColumn(4, DefaultNameColumn.CORRESPONDENT));
+		expected.put(DefaultNameColumn.SUMMARY, new NameColumn(5, DefaultNameColumn.SUMMARY));
     }
 
 	@Test
@@ -54,10 +39,22 @@ class MapColumnsTest {
 	}
 	
 	@Test
-	void testNumberColumn() throws Exception {
+	void testMapColumnDublicateName() throws Exception {
+		FileInputStream fis = new FileInputStream("src/test/resources/test_filter.docx");
+		XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
+		XWPFTable table = document.getTables().get(1);
+		MapColumns mapColumns = new MapColumns();
+		assertThrows(Exception.class, () -> mapColumns.mapColumn(table.getRow(0)));
+		document.close();
+		fis.close();
+	}
+	
+	@Test
+	void testNumberColumnsTable() throws Exception {
 		FileInputStream fis = new FileInputStream("src/test/resources/test_filter.docx");
 		XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
 		XWPFTable table = document.getTables().get(0);
+		table.getRow(0).removeCell(0);
 		table.getRow(0).removeCell(0);
 		table.getRow(0).removeCell(0);
 		table.getRow(0).removeCell(0);
@@ -69,10 +66,24 @@ class MapColumnsTest {
 	}
 
 	@Test
-	void testSizeFilter() throws Exception {
+	void testCheckSize() throws Exception {
 		FileInputStream fis = new FileInputStream("src/test/resources/test_filter.docx");
 		XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
-		XWPFTable table = document.getTables().get(1);
+		XWPFTable table = document.getTables().get(0);
+		MapColumns mapColumns = new MapColumns();
+		assertEquals(DefaultNameColumn.values().length, mapColumns.mapColumn(table.getRow(0)).size());
+		document.close();
+		fis.close();
+	}
+	
+	@Test
+	void testCheckSizeIncorrect() throws Exception {
+		FileInputStream fis = new FileInputStream("src/test/resources/test_filter.docx");
+		XWPFDocument document = new XWPFDocument(OPCPackage.open(fis));
+		XWPFTable table = document.getTables().get(0);
+		table.getRow(0).removeCell(0);
+		table.getRow(0).removeCell(0);
+		table.getRow(0).removeCell(0);
 		MapColumns mapColumns = new MapColumns();
 		assertThrows( Exception.class, () ->  mapColumns.mapColumn(table.getRow(0)));
 		document.close();
