@@ -17,8 +17,10 @@ public class NameColumn {
 		super();
 	}
 
-	public NameColumn(int numberColumn2, DefaultNameColumn defaultNameColumn) {
+	public NameColumn(int numberColumn, DefaultNameColumn nameColumn) {
 		super();
+		this.numberColumn = numberColumn;
+		this.nameColumn = nameColumn;
 	}
 
 	public DefaultNameColumn getNameColumn() {
